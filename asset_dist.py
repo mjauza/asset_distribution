@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from scipy.stats import norm
+from scipy.stats import norm, lognorm
 import os
 from scipy.optimize import curve_fit
 import pickle
@@ -29,6 +29,16 @@ class OptionImpliedDist:
         popt = curve_fit(norm.pdf, density_ser.index.values, density_ser.values, p0=[mean, std], bounds=(0, np.inf))
         mu, sigma = popt[0]
         return mu, sigma
+
+    @staticmethod
+    def fit_log_normal(density_ser: pd.Series):
+        mean = np.mean(density_ser.index.values)
+        std = np.std(density_ser.index.values)
+        fun = lambda x, mean, std: lognorm.pdf(x, s=1, loc=mean, scale=std)
+        popt = curve_fit(fun, density_ser.index.values, density_ser.values, p0=[mean, std], bounds=(0, np.inf))
+        mu, sigma = popt[0]
+        return mu, sigma
+
     @staticmethod
     def preprocess_data(symbol):
         filename = f"call_curves_{symbol}.pickle"
@@ -50,7 +60,13 @@ class OptionImpliedDist:
     def plot_results(density_ser, **kwargs):
         mu = kwargs["mu"]
         sigma = kwargs["sigma"]
-        fitted_values = norm.pdf(density_ser.index, mu, sigma)
+        dist = kwargs['dist']
+        if dist == 'norm':
+            fitted_values = norm.pdf(density_ser.index, mu, sigma)
+        elif dist == 'lognorm':
+            fitted_values = lognorm.pdf(density_ser.index, mu, sigma)
+        else:
+            raise ValueError('distribution not implemented')
         fitted_ser = pd.Series(fitted_values, index = density_ser.index)
         density_df = density_ser.to_frame()
         density_df.columns = ['actual']
@@ -62,21 +78,23 @@ class OptionImpliedDist:
 
 
     @staticmethod
-    def main(symbol):
+    def main(symbol, dist = "lognorm"):
         res = OptionImpliedDist.preprocess_data(symbol)
         for tau, (curve, df) in res.items():
             density_ser = OptionImpliedDist.get_implied_prob_array(curve, tau, points=df['Strike'].values, delta = None, r = 0.01)
-            mu, sigma = OptionImpliedDist.fit_normal_dist(density_ser)
-            OptionImpliedDist.plot_results(density_ser, mu = mu, sigma = sigma)
+            if dist == 'norm':
+                mu, sigma = OptionImpliedDist.fit_normal_dist(density_ser)
+            elif dist == 'lognorm':
+                mu, sigma = OptionImpliedDist.fit_log_normal(density_ser)
+            else:
+                raise ValueError('distribution not implemented')
+            OptionImpliedDist.plot_results(density_ser, mu=mu, sigma=sigma, dist=dist)
             print(f"tau = {tau} ; mu = {mu} ; sigma = {sigma}")
 
 
-
-
-
 if __name__ == '__main__':
-    symbol = 'SPY'
-    OptionImpliedDist.main(symbol)
+    symbol = 'AAPL'
+    OptionImpliedDist.main(symbol, dist='norm')
 
 
 
