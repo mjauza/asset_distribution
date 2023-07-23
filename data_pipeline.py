@@ -29,10 +29,13 @@ def get_raw_data(
 
     return res
 
-def append_target(raw_data_dict, num_day_ahead = 1, target_var = "Close"):
+def append_target(raw_data_dict, num_day_ahead = 1, target_var = "Close", get_ret = True):
     res = {}
     for symbol, df in raw_data_dict.items():
-        df["target"] = df[target_var].shift(num_day_ahead)
+        if get_ret:
+            df["target"] = (df[target_var].shift(num_day_ahead) - df[target_var])/df[target_var]
+        else:
+            df["target"] = df[target_var].shift(num_day_ahead)
         res[symbol] = df
     return res
 
