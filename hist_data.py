@@ -60,6 +60,12 @@ def add_ta_indi(df):
     df["so"] = so_buy + so_sell
 
 if __name__ == "__main__":
+    # get_hist_data(
+    #     ["^GSPC"],
+    #     "1985-01-01",
+    #     "2020-12-31"
+    # )
+
     res = get_hist_data(
         ["AAPL"],
         "1985-01-01",
