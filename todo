@@ -1,0 +1,12 @@
+1. add technical indicators to data
+1. Add market index
+1. Try to get market expectations - financial ratios
+2. Try with dupont model. Try to get Quarterly Data... Otherwise Drop financial ratios? 
+3. Try to get sentiment analysis?
+2. experiment with other models
+3. try with sequence models:
+  - ARIMA, Kalman Filter, Hidden Markov Models
+  - Bayesian networks
+  - LSTM, CNN,
+
+	

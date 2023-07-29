@@ -12,7 +12,7 @@ def get_fin_ratios(
     vr_select = ['Earnings per Share (EPS)', 'Revenue per Share (RPS)','Price-to-Earnings (PE)']
 ):
     FMP_KEY = os.getenv("FMP")
-    companies = Toolkit(companies_symbols, api_key=FMP_KEY)
+    companies = Toolkit(companies_symbols, api_key=FMP_KEY, quarterly = True)
 
     profitability_ratios = companies.ratios.collect_profitability_ratios()
     efficiency_ratios = companies.ratios.collect_efficiency_ratios()
