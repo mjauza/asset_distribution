@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import os
+import matplotlib.pyplot as plt
 from sklearn.metrics import r2_score, mean_squared_error, accuracy_score
 def load_data(company_symbol, save_dir = "../asset_dist_data"):
     filename = f"{company_symbol}.parquet"
@@ -29,3 +30,11 @@ def evaluate(y_true: np.array, y_pred: np.array, is_return):
         res["acc"] = acc
 
     return res
+
+def plot_history(history):
+    df = pd.DataFrame({
+        "loss" : history.history["loss"],
+        "val_loss": history.history["val_loss"],
+    })
+    df.plot()
+    plt.show()

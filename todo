@@ -4,6 +4,7 @@
 2. Try with dupont model. Try to get Quarterly Data... Otherwise Drop financial ratios? 
 3. Try to get sentiment analysis?
 2. experiment with other models
+   - try baesian statistic - prior distribution to be normal
 3. try with sequence models:
   - ARIMA, Kalman Filter, Hidden Markov Models
   - Bayesian networks
